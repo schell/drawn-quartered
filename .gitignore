@@ -1,0 +1,7 @@
+test
+*.swp
+*.swo
+*.hi
+*.o
+**/.DS_Store
+dist/**
