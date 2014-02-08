@@ -135,7 +135,6 @@ renderText t r = do
     let Size w h = r^.rendererWindowSize
         font     = r^.rendererFontDir ++ t^.textFont
         size     = t^.textWidth
-        text     = t^.textString
         pj = orthoMatrix 0 (fromIntegral w) 0 (fromIntegral h) 0 1
         mv = r^.rendererModelview
         ts = r^.rendererTextShader
@@ -152,7 +151,6 @@ renderText t r = do
     ts^.T.setProjection $ concat pj
     ts^.T.setModelview $ concat mv
     ts^.setTextColor $ t^.textColor
-    putStrLn text
     _ <- drawTextAt' tr (Position 0 0) (t^.textString)
     return $ r & rendererFontAtlas %~ (insertAtlas font size (tr'^.atlas))
 
@@ -202,12 +200,12 @@ newApp = App (Position 0 0)
 gui :: SceneList
 gui = node $ do
     nodeRotation .= Rotation (pi/4)
-    nodePosition .= Position 100 100
+    nodePosition .= Position 100 0
     drawText $ do
         textWidth .= 32
         textColor .= Color4 1 0 0 0.5
         textFont .= "Deutsch.ttf"
-        textString .= "Drawn & Quartered"
+        textString .= "Scene graphs are serious business."
     return $ node $ do
         -- Set some initial goodies.
         nodeSize .= Size 150 150
@@ -240,12 +238,17 @@ gui = node $ do
                               drawShapes $ strokePath $ do
                                   setColor $ Color4 0 1 1 1
                                   rectangleAt 0 0 50 50
+                              drawText $ do
+                                  textFont .= "Deutsch.ttf"
+                                  textColor .= Color4 0 1 1 1
+                                  textWidth .= 32
+                                  textString .= "Serious business."
                               return [])
 
 
 main :: IO ()
 main = do
-    wvar <- initUrza (100,100) (800,600) "Purely Functional Scene List"
+    wvar <- initUrza (100,100) (800,600) "Purely Functional Scene Graph"
     fontDir <- fmap (++ "/assets/font/") getCurrentDirectory
 
     tshader <- makeTextShaderProgram
